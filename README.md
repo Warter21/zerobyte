@@ -42,6 +42,7 @@ Attributes:
 - retention (policy object)
 
 🛠 Installation
+
 Copy the integration folder into: /config/custom_components/zerobyte/
 Restart Home Assistant.
 
