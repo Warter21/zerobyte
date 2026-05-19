@@ -5,11 +5,10 @@ This integration provides compact, attribute‑based sensors for Volumes, Reposi
 Each Zerobyte entity appears as one HA sensor, with detailed information exposed via attributes.
 
 ✨ Features
-✔ Volume Sensors
-One sensor per volume.
 
-State:  
-mounted, unmounted, error, etc.
+✔ Volume Sensors
+
+State: mounted, unmounted, error, etc.
 
 Attributes:
 - total (bytes)
@@ -19,10 +18,8 @@ Attributes:
 - backend
 
 ✔ Repository Sensors
-One sensor per repository.
 
-State:  
-healthy, error, etc.
+State: healthy, error, etc.
 
 Attributes:
 - snapshots_count
@@ -33,10 +30,8 @@ Attributes:
 - uncompressed_size
 
 ✔ Backup Sensors
-One sensor per backup job.
 
-State:  
-success, failed, running, etc.
+State: success, failed, running, etc.
 
 Attributes:
 - last_backup (ISO timestamp)
