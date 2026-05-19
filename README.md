@@ -46,9 +46,11 @@ Attributes:
 🛠 Installation
 
 Copy the integration folder into: /config/custom_components/zerobyte/
+
 Restart Home Assistant.
 
 Go to:
+
 Settings → Devices & Services → Add Integration → Zerobyte
 
 Enter:
