@@ -1,4 +1,5 @@
 📦 Zerobyte Home Assistant Integration
+
 A custom Home Assistant integration for Zerobyte, a modern Restic‑based backup system.
 This integration provides compact, attribute‑based sensors for Volumes, Repositories, and Backups.
 
