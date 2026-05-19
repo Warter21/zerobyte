@@ -42,16 +42,14 @@ Attributes:
 - retention (policy object)
 
 🛠 Installation
-Copy the integration folder into:
-
-Code
-/config/custom_components/zerobyte/
+Copy the integration folder into: /config/custom_components/zerobyte/
 Restart Home Assistant.
 
 Go to:
 Settings → Devices & Services → Add Integration → Zerobyte
+
 Enter:
-Zerobyte host (e.g. http://192.168.0.10:4096)
-Username
-Password
-Update interval (seconds)
+- Zerobyte host (e.g. http://192.168.0.10:4096)
+- Username
+- Password
+- Update interval (seconds)
