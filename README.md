@@ -1,60 +1,79 @@
-📦 Zerobyte Home Assistant Integration
+# Zerobyte Home Assistant Integration
 
-A custom Home Assistant integration for Zerobyte, a modern Restic‑based backup system.
-
-This integration provides compact, attribute‑based sensors for Volumes, Repositories, and Backups.
-
+A custom Home Assistant integration for Zerobyte, a modern Restic-based backup system.  
+This integration provides compact, attribute-based sensors for Volumes, Repositories, and Backups.  
 Each Zerobyte entity appears as one HA sensor, with detailed information exposed via attributes.
 
-✨ Features
+---
 
-✔ Volume Sensors
+## 🚀 Features
 
-State: mounted, unmounted, error, etc.
+- Volume sensors with storage metrics  
+- Repository sensors with snapshot and compression data  
+- Backup sensors with last/next run info  
+- Dynamic MDI icons  
+- Clean attribute-based design  
+- Unified automation for monitoring and alerts  
+- Optional Lovelace dashboard
 
-Attributes:
-- total (bytes)
-- used (bytes)
-- free (bytes)
-- path
-- backend
+---
 
-✔ Repository Sensors
+## 📦 Installation
 
-State: healthy, error, etc.
+1. Copy the integration folder into:
 
-Attributes:
-- snapshots_count
-- last_snapshot (ISO timestamp)
-- compression_ratio
-- compression_space_saving
-- total_size
-- uncompressed_size
+```
+/config/custom_components/zerobyte/
+```
 
-✔ Backup Sensors
+2. Restart Home Assistant  
+3. Go to:  
+   **Settings → Devices & Services → Add Integration → Zerobyte**
 
-State: success, failed, running, etc.
+---
 
-Attributes:
-- last_backup (ISO timestamp)
-- next_backup (ISO timestamp)
-- volume (name)
-- repository (name)
-- cron (cron expression)
-- retention (policy object)
+## 🔌 API Structure
 
-🛠 Installation
+The integration uses the Zerobyte API to fetch:
 
-Copy the integration folder into: /config/custom_components/zerobyte/
+- Volumes  
+- Repositories  
+- Backups  
+- Snapshot metadata  
 
-Restart Home Assistant.
+All data is normalized into a clean Python structure before being exposed to Home Assistant.
 
-Go to:
+---
 
-Settings → Devices & Services → Add Integration → Zerobyte
+## 🧩 Entities Overview
 
-Enter:
-- Zerobyte host (e.g. http://192.168.0.10:4096)
-- Username
-- Password
-- Update interval (seconds)
+### **Volume Sensors**
+- State: volume status  
+- Attributes: total, used, free, backend, path  
+
+### **Repository Sensors**
+- State: repository status  
+- Attributes: snapshot count, last snapshot, compression stats  
+
+### **Backup Sensors**
+- State: last backup status  
+- Attributes: last run, next run, volume, repository, cron, retention  
+
+---
+
+## ⚙️ Automations
+
+A single unified automation handles:
+
+- Backup success  
+- Backup failure  
+- Missed backup  
+- Snapshot count drop  
+- Low free space  
+- Repository error state  
+
+---
+
+## 📄 License
+
+MIT License
