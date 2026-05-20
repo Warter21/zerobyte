@@ -61,19 +61,6 @@ All data is normalized into a clean Python structure before being exposed to Hom
 
 ---
 
-## ⚙️ Automations
-
-A single unified automation handles:
-
-- Backup success  
-- Backup failure  
-- Missed backup  
-- Snapshot count drop  
-- Low free space  
-- Repository error state  
-
----
-
 ## 📄 License
 
 MIT License
