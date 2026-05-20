@@ -1,7 +1,7 @@
 {
   "domain": "zerobyte",
   "name": "Zerobyte",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "documentation": "https://github.com/warter21/zerobyte",
   "integration_type": "service",
   "requirements": [
