@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data["host"]
     username = entry.data["username"]
     password = entry.data["password"]
-    scan_interval = entry.data.get("scan_interval", 60)
+    scan_interval = entry.data.get("scan_interval", 300)
 
     session = aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar(unsafe=True))
     client = ZerobyteClient(host, username, password, session)
