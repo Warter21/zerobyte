@@ -70,6 +70,9 @@ class ZerobyteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     title=f"Zerobyte ({host})",
                     data=user_input,
                 )
+            finally:
+                if errors:
+                    await session.close()
 
         return self.async_show_form(
             step_id="user",
