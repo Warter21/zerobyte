@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zerobyte Backup",
+        "description": "Connexion à votre instance Zerobyte",
+        "data": {
+          "host": "Hôte (e.g. http://192.168.1.10:4096)",
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe",
+          "scan_interval": "Intervalle d'interrogation (secondes)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à Zerobyte",
+      "invalid_auth": "Identifiants invalides",
+      "unknown": "Erreur inattendue"
+    },
+    "abort": {
+      "already_configured": "Zerobyte est déjà configuré"
+    }
+  }
+}
