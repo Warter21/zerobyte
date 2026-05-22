@@ -101,7 +101,7 @@ class ZerobyteVolumeSensor(ZerobyteBaseSensor):
             return "mdi:harddisk"
         if status == "error":
             return "mdi:harddisk-alert"
-        return "mdi:harddisk"
+        return "mdi:harddisk-off"
 
     @property
     def state(self):
