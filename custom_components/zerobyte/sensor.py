@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
