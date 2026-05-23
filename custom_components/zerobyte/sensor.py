@@ -35,8 +35,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     for backup in data.get("backups", []):
         entities.append(ZerobyteBackupSensor(coordinator, backup))
 
- async_add_entities(entities, True)
-
+    async_add_entities(entities, True)
 
 # ============================================================
 # BASE CLASS
@@ -59,33 +58,29 @@ class ZerobyteBaseSensor(CoordinatorEntity, SensorEntity):
 
     def _find_item(self):
         data = self.coordinator.data or {}
-
-        # volumes
-        if "statfs" in self._item:
+        if self._entity_type == "volume":
             for v in data.get("volumes", []):
                 if v.get("name") == self._item.get("name"):
                     return v
-
-        # repositories
-        if "snapshots" in self._item:
+        elif self._entity_type == "repository":
             for r in data.get("repositories", []):
                 if r.get("id") == self._item.get("id"):
                     return r
-
-        # backups
-        if "lastBackupAt" in self._item:
+        elif self._entity_type == "backup":
             for b in data.get("backups", []):
                 if b.get("id") == self._item.get("id"):
                     return b
-
         return self._item
-
 
 # ============================================================
 # VOLUME SENSOR
 # ============================================================
 
 class ZerobyteVolumeSensor(ZerobyteBaseSensor):
+    def __init__(self, coordinator, item):
+        super().__init__(coordinator, item)
+        self._entity_type = "volume"
+        
     @property
     def name(self):
         return f"Zerobyte Volume – {self._item.get('name')}"
@@ -127,6 +122,10 @@ class ZerobyteVolumeSensor(ZerobyteBaseSensor):
 # ============================================================
 
 class ZerobyteRepositorySensor(ZerobyteBaseSensor):
+    def __init__(self, coordinator, item):
+        super().__init__(coordinator, item)
+        self._entity_type = "repository"
+        
     @property
     def name(self):
         return f"Zerobyte Repository – {self._item.get('name')}"
@@ -178,6 +177,10 @@ class ZerobyteRepositorySensor(ZerobyteBaseSensor):
 # ============================================================
 
 class ZerobyteBackupSensor(ZerobyteBaseSensor):
+    def __init__(self, coordinator, item):
+        super().__init__(coordinator, item)
+        self._entity_type = "backup"
+    
     @property
     def name(self):
         return f"Zerobyte Backup – {self._item.get('name')}"
