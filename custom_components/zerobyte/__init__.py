@@ -7,7 +7,7 @@ import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import DOMAIN, PLATFORMS
 from .api import ZerobyteClient
 from .coordinator import ZerobyteCoordinator
 
