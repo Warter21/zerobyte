@@ -37,6 +37,37 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     async_add_entities(entities, True)
 
+known_ids: set[str] = {e.unique_id for e in entities}
+
+    def _check_new_entities() -> None:
+        data = coordinator.data or {}
+        new_entities = []
+
+        for vol in data.get("volumes", []):
+            uid = f"zerobyte_volume_{vol.get('name')}"
+            if uid not in known_ids:
+                known_ids.add(uid)
+                new_entities.append(ZerobyteVolumeSensor(coordinator, vol))
+
+        for repo in data.get("repositories", []):
+            uid = f"zerobyte_repository_{repo.get('id')}"
+            if uid not in known_ids:
+                known_ids.add(uid)
+                new_entities.append(ZerobyteRepositorySensor(coordinator, repo))
+
+        for backup in data.get("backups", []):
+            uid = f"zerobyte_backup_{backup.get('id')}"
+            if uid not in known_ids:
+                known_ids.add(uid)
+                new_entities.append(ZerobyteBackupSensor(coordinator, backup))
+
+        if new_entities:
+            async_add_entities(new_entities, True)
+
+    entry.async_on_unload(
+        coordinator.async_add_listener(_check_new_entities)
+    )
+
 # ============================================================
 # BASE CLASS
 # ============================================================
