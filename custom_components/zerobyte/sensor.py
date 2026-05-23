@@ -35,7 +35,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     for backup in data.get("backups", []):
         entities.append(ZerobyteBackupSensor(coordinator, backup))
 
-    async_add_entities(entities)
+ async_add_entities(entities, True)
 
 
 # ============================================================
