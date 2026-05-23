@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -161,7 +161,7 @@ class ZerobyteRepositorySensor(ZerobyteBaseSensor):
             if ts:
                 if ts > 1e10:
                     ts = ts / 1000
-                last_snap = datetime.fromtimestamp(ts).isoformat()
+                last_snap = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
         return {
             "snapshots_count": len(snaps),
@@ -211,7 +211,7 @@ class ZerobyteBackupSensor(ZerobyteBaseSensor):
                 return None
             if ts > 1e10:
                 ts = ts / 1000
-            return datetime.fromtimestamp(ts).isoformat()
+            return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
         return {
             "last_backup": fmt(item.get("lastBackupAt")),
