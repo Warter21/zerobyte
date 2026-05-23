@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
@@ -142,6 +142,6 @@ class ZerobyteClient:
         try:
             if ts > 1e10:
                 ts = ts / 1000
-            return datetime.fromtimestamp(ts).isoformat()
+            return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
         except Exception:
             return None
