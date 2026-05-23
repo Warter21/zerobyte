@@ -7,7 +7,7 @@ import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, PLATFORMS, DEFAULT_SCAN_INTERVAL
 from .api import ZerobyteClient
 from .coordinator import ZerobyteCoordinator
 
@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data["host"]
     username = entry.data["username"]
     password = entry.data["password"]
-    scan_interval = entry.data.get("scan_interval", 300)
+    scan_interval = entry.data.get("scan_interval", DEFAULT_SCAN_INTERVAL)
 
     session = aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar(unsafe=True))
     client = ZerobyteClient(host, username, password, session)
