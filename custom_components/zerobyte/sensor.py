@@ -51,7 +51,7 @@ class ZerobyteBaseSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self):
         return DeviceInfo(
-            identifiers={(DOMAIN, "zerobyte")},
+            identifiers={(DOMAIN, self.coordinator.config_entry.entry_id)},
             name="Zerobyte",
             manufacturer="Zerobyte",
         )
