@@ -37,7 +37,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     async_add_entities(entities, True)
 
-known_ids: set[str] = {e.unique_id for e in entities}
+    known_ids: set[str] = {e.unique_id for e in entities}
 
     def _check_new_entities() -> None:
         data = coordinator.data or {}
