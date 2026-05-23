@@ -37,6 +37,7 @@ class ZerobyteCoordinator(DataUpdateCoordinator[dict]):
                 try:
                     detail = await self.client.get_backup_detail(bid)
                 except Exception:
+                    _LOGGER.debug("Failed to fetch backup detail for %s", bid, exc_info=True)
                     detail = {}
 
                 b.update(detail)
