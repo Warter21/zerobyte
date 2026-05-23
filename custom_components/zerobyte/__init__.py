@@ -5,10 +5,11 @@ import logging
 import aiohttp
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, PLATFORMS, DEFAULT_SCAN_INTERVAL
-from .api import ZerobyteClient
+from .api import ZerobyteClient, ZerobyteAuthError, ZerobyteConnectionError
 from .coordinator import ZerobyteCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,7 +26,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = ZerobyteClient(host, username, password, session)
 
     # Initial login
-    await client.authenticate()
+    try:
+        await client.authenticate()
+    except ZerobyteAuthError as err:
+        raise ConfigEntryAuthFailed("Invalid credentials") from err
+    except ZerobyteConnectionError as err:
+        raise ConfigEntryNotReady(f"Cannot connect: {err}") from err
 
     coordinator = ZerobyteCoordinator(hass, client, scan_interval)
     await coordinator.async_config_entry_first_refresh()
