@@ -32,6 +32,15 @@ Each Zerobyte entity appears as one HA sensor, with detailed information exposed
 
 ---
 
+## 🔐 Authentication
+
+This integration supports two authentication methods:
+
+- **Username / password** — works with any Zerobyte version
+- **API key** — requires **Zerobyte server v0.40.0 or newer**, since API key management was introduced in that release. Create a key under **Settings → API Keys** in your Zerobyte instance, then select "API key" during setup.
+
+---
+
 ## 🔌 API Structure
 
 The integration uses the Zerobyte API to fetch:
