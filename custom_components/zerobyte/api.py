@@ -27,15 +27,37 @@ class ZerobyteConnectionError(Exception):
 
 
 class ZerobyteClient:
-    """Async Zerobyte API client using cookie-based session auth."""
+    """Async Zerobyte API client.
 
-    def __init__(self, host: str, username: str, password: str, session: aiohttp.ClientSession) -> None:
+    Supports two authentication modes:
+    - Cookie-based session auth (username + password)
+    - API key auth (static key sent on every request via the x-api-key header)
+    """
+
+    def __init__(
+        self,
+        host: str,
+        session: aiohttp.ClientSession,
+        username: str | None = None,
+        password: str | None = None,
+        api_key: str | None = None,
+    ) -> None:
         self._host = host.rstrip("/")
         self._username = username
         self._password = password
+        self._api_key = api_key
         self._session = session
 
+    @property
+    def uses_api_key(self) -> bool:
+        """Return True if this client authenticates via API key."""
+        return bool(self._api_key)
+
     async def authenticate(self) -> None:
+        if self.uses_api_key:
+            await self._verify_api_key()
+            return
+
         url = f"{self._host}{LOGIN_PATH}"
         payload = {"username": self._username, "password": self._password}
 
@@ -66,11 +88,27 @@ class ZerobyteClient:
 
         raise last_error or ZerobyteConnectionError("Login failed after retries")
 
+    async def _verify_api_key(self) -> None:
+        """Lightweight check that the API key is accepted by the server."""
+        url = f"{self._host}{VOLUMES_PATH}"
+        try:
+            async with self._session.get(url) as resp:
+                if resp.status == 401:
+                    raise ZerobyteAuthError("Invalid or revoked API key")
+                if resp.status not in (200, 201):
+                    text = await resp.text()
+                    raise ZerobyteConnectionError(f"API key check failed ({resp.status}): {text}")
+        except aiohttp.ClientConnectorError as err:
+            raise ZerobyteConnectionError(f"Cannot connect to {self._host}") from err
+
     async def _get(self, path: str) -> Any:
         url = f"{self._host}{path}"
         try:
             async with self._session.get(url) as resp:
                 if resp.status == 401:
+                    if self.uses_api_key:
+                        # A static API key won't become valid on retry.
+                        raise ZerobyteAuthError("Invalid or revoked API key")
                     await self.authenticate()
                     async with self._session.get(url) as resp2:
                         resp2.raise_for_status()
