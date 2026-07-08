@@ -3,11 +3,28 @@
     "step": {
       "user": {
         "title": "Zerobyte Backup",
-        "description": "Verbindung zu Ihrer Zerobyte-Instanz herstellen",
+        "description": "Wählen Sie die Authentifizierungsmethode",
+        "menu_options": {
+          "password": "Benutzername / Passwort",
+          "api_key": "API-Schlüssel"
+        }
+      },
+      "password": {
+        "title": "Zerobyte Backup",
+        "description": "Verbindung zu Ihrer Zerobyte-Instanz mit Benutzername und Passwort herstellen",
         "data": {
           "host": "Host (e.g. http://192.168.1.10:4096)",
           "username": "Benutzername",
           "password": "Passwort",
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        }
+      },
+      "api_key": {
+        "title": "Zerobyte Backup",
+        "description": "Verbindung zu Ihrer Zerobyte-Instanz mit einem API-Schlüssel herstellen (erfordert Zerobyte v0.40.0 oder neuer). Erstellen Sie einen unter Settings > API Keys in Zerobyte.",
+        "data": {
+          "host": "Host (e.g. http://192.168.1.10:4096)",
+          "api_key": "API-Schlüssel",
           "scan_interval": "Abfrageintervall (Sekunden)"
         }
       }
