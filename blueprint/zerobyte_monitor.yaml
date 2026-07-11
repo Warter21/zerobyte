@@ -1,0 +1,173 @@
+blueprint:
+  name: Zerobyte Backup Monitor
+  description: >
+    Monitors Zerobyte backup/repo/volume sensors and sends a Telegram
+    notification on failed backups, missed schedules, snapshot count
+    out of range, or low free space. Multiple entities selectable per field.
+  domain: automation
+  input:
+    backup_sensors:
+      name: Backup sensors
+      description: sensor.zerobyte_backup_* entities (state-based monitoring)
+      selector:
+        entity:
+          multiple: true
+          filter:
+            domain: sensor
+    repo_sensors:
+      name: Repository sensors
+      description: sensor.zerobyte_repository_* entities (monitors snapshots_count attribute)
+      selector:
+        entity:
+          multiple: true
+          filter:
+            domain: sensor
+    volume_sensors:
+      name: Volume sensors
+      description: sensor.zerobyte_volume_* entities (monitors free attribute)
+      selector:
+        entity:
+          multiple: true
+          filter:
+            domain: sensor
+    free_space_threshold:
+      name: Free space alert threshold (bytes)
+      default: 10000000000
+      selector:
+        number:
+          min: 0
+          max: 1000000000000
+          mode: box
+    snapshot_min:
+      name: Snapshot count minimum
+      default: 21
+      selector:
+        number:
+          min: 0
+          max: 500
+          mode: box
+    snapshot_max:
+      name: Snapshot count maximum
+      default: 27
+      selector:
+        number:
+          min: 0
+          max: 500
+          mode: box
+    notify_target:
+      name: Notify entity
+      description: e.g. notify.telegram_bot_xxx
+      selector:
+        entity:
+          filter:
+            domain: notify
+
+mode: parallel
+
+triggers:
+  - id: backup
+    trigger: state
+    entity_id: !input backup_sensors
+  - id: repo
+    trigger: state
+    entity_id: !input repo_sensors
+    attribute: snapshots_count
+  - id: volume
+    trigger: numeric_state
+    entity_id: !input volume_sensors
+    attribute: free
+    below: !input free_space_threshold
+
+conditions:
+  - condition: template
+    value_template: |
+      {{ trigger.from_state is not none and
+         trigger.from_state.state not in ['unavailable', 'unknown', 'none'] }}
+
+actions:
+  - variables:
+      snap_min: !input snapshot_min
+      snap_max: !input snapshot_max
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: backup
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'failed' }}"
+        sequence:
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_target
+            data:
+              message: >
+                ❌ **'{{ trigger.to_state.name | default(trigger.to_state.entity_id) }}'** FAILED.
+
+                {% set t = trigger.to_state.attributes.last_backup | default('') %}
+                🕐 Last run: {{ as_datetime(t) | as_local | as_timestamp | timestamp_custom('%Y-%m-%d %H:%M') if t else 'unknown' }}
+
+      - conditions:
+          - condition: trigger
+            id: backup
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'success' }}"
+        sequence:
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_target
+            data:
+              message: >
+                🟢 **'{{ trigger.to_state.name | default(trigger.to_state.entity_id) }}'** completed successfully.
+
+                {% set t = trigger.to_state.attributes.last_backup | default('') %}
+                🕐 Time: {{ as_datetime(t) | as_local | as_timestamp | timestamp_custom('%Y-%m-%d %H:%M') if t else 'unknown' }}
+
+      - conditions:
+          - condition: trigger
+            id: backup
+          - condition: template
+            value_template: >
+              {% set next = as_datetime(trigger.to_state.attributes.next_backup | default('')) %}
+              {% set last = as_datetime(trigger.to_state.attributes.last_backup | default('')) %}
+              {{ next is not none and last is not none and next < now() and last < next }}
+        sequence:
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_target
+            data:
+              message: >
+                ⚠️ **'{{ trigger.to_state.name | default(trigger.to_state.entity_id) }}'** did NOT run as scheduled!
+
+                {% set t = trigger.to_state.attributes.next_backup | default('') %}
+                📅 Was due: {{ as_datetime(t) | as_local | as_timestamp | timestamp_custom('%Y-%m-%d %H:%M') if t else 'unknown' }}
+
+      - conditions:
+          - condition: trigger
+            id: repo
+          - condition: template
+            value_template: >
+              {{ ((trigger.to_state.attributes.snapshots_count | default(0)) < snap_min and
+                  (trigger.from_state.attributes.snapshots_count | default(0)) >= snap_min) or
+                 ((trigger.to_state.attributes.snapshots_count | default(0)) > snap_max and
+                  (trigger.from_state.attributes.snapshots_count | default(0)) <= snap_max) }}
+        sequence:
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_target
+            data:
+              message: >
+                ⚠️ Snapshot count out of range for repository **'{{ trigger.to_state.name | default(trigger.to_state.entity_id) }}'**.
+
+                📊 {{ trigger.from_state.attributes.snapshots_count | default('?') }} → {{ trigger.to_state.attributes.snapshots_count | default('?') }} (expected: {{ snap_min }}–{{ snap_max }})
+
+      - conditions:
+          - condition: trigger
+            id: volume
+        sequence:
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_target
+            data:
+              message: >
+                🔴 Volume **'{{ trigger.to_state.name | default(trigger.to_state.entity_id) }}'** is running LOW on free space!
+
+                📊 Free: {{ (trigger.to_state.attributes.free / 1073741824) | round(2) }} GB
